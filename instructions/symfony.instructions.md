@@ -1,16 +1,19 @@
 ---
 name: symfony-instructions
-description: "Behavioral rules for agents working on Symfony code, aligned with this project's architecture."
+description: "Behavioral rules for agents working on Symfony code. Technical standards are in the php-symfony skill."
+applyTo: '**/*.php, **/*.yaml, **/*.yml, **/*.xml, **/*.twig'
 ---
 
-# Symfony Instructions (Agent Behavior)
+# Symfony Instructions
 
-These instructions define HOW an agent must behave when implementing, modifying, reviewing, testing or documenting Symfony code for this project.  
-They do NOT contain technical Symfony rules — those are located in the Symfony Skill file.
+These instructions define **agent behavior only** for Symfony tasks.
+All technical rules and references are in `skills/php-symfony/SKILL.md`.
 
 ---
 
-# Mission
+# Agent Behavior Protocol
+
+## Mission
 
 When performing a Symfony task, the agent MUST:
 
@@ -18,47 +21,45 @@ When performing a Symfony task, the agent MUST:
 - Follow the project's architecture EXACTLY:
   src/
     Controller/{Domain}/
+    Command/{Domain}/
+    Dto/{Domain}/
     Service/{Domain}/
     Repository/
     Entity/
     Model/{Domain}/
     Exception/
-    Traits/
-    Utils/
+    Event/
+    Trait/
+    Util/
 - Ensure strict separation of concerns:
   - Controller → HTTP + call ONE service
+  - Command → CLI + call ONE service
+  - Dto → data transfer only, no logic
   - Service → business/domain logic
   - Repository → DB logic only
   - Entity → pure data + docblock mapping
   - Model → external API wrapper
   - Exception → domain/technical errors
-  - Utils → pure helpers
+  - Event → domain events
+  - Trait → reusable code snippets
+  - Util → pure helpers
 
 - Produce code that is:  
   **complete**, **explicit**, **PSR‑12**, **testable**, **maintainable**, **coherent**.
 
 ---
 
-# Decision Protocol (MUST follow)
+## Decision Protocol (MUST follow)
 
-## 1. Clarify
+### 1. Clarify
 If requirements are unclear:
 - Ask up to **2 clarification questions**, OR  
 - State explicit assumptions
 
-## 2. Identify impacted layers
-Determine EXACTLY which folders are affected:
-- `Controller/{Domain}/…`
-- `Service/{Domain}/…`
-- `Repository/…`
-- `Entity/…`
-- `Model/{Domain}/…`
-- `Exception/…`
-- `Traits/…`
-- `Utils/…`
-- config/security/validation?
+### 2. Identify impacted layers
+Determine which layers and artifacts are affected (for example controller, command, service, repository, DTO, entity, form, event, config, tests, docs).
 
-## 3. Compliance Check
+### 3. Compliance Check
 Ensure:
 - Controllers remain thin  
 - Services contain ALL domain logic  
@@ -69,28 +70,27 @@ Ensure:
 - Logging strategy aligned  
 - Naming conventions consistent  
 
-## 4. Plan the change
+### 4. Plan the change
 Before implementing:
 - List all files to create/modify
 - Plan interactions between layers
 - Identify DTOs/exceptions/models needed
 - Decide test coverage required
 
-## 5. Implement
+### 5. Implement
 - Provide FULL Symfony code (no pseudo-code)
 - Use correct namespaces and imports
 - Ensure services are `final` and dependencies `readonly`
-- Use docblock ORM mapping for entities
 - Keep business logic ONLY in services
 
-## 6. Tests
+### 6. Tests
 MUST provide:
 - Unit tests for services
 - Functional tests for controllers
 - API tests where relevant
 - Edge-case tests if needed
 
-## 7. Final validation
+### 7. Final validation
 Verify:
 - Architecture fully respected
 - No responsibility leakage
@@ -100,56 +100,56 @@ Verify:
 
 ---
 
-# Mandatory Output Format (STRICT)
+## Mandatory Output Format (STRICT)
 
 The agent MUST respond using this structure:
 
-## 1. Summary  
+### 1. Summary  
 High-level description of the task.
 
-## 2. File Changes  
+### 2. File Changes  
 List created/modified/deleted files:
 - `src/Service/User/UserCreator.php` (created)
 - `src/Controller/User/UserController.php` (modified)
 - `tests/Service/User/UserCreatorTest.php` (created)
 
-## 3. Implementation  
+### 3. Implementation  
 Full Symfony-compliant code blocks, grouped by file.
 
-## 4. Tests  
+### 4. Tests  
 PHPUnit or WebTestCase tests covering the new behavior.
 
-## 5. Notes & Assumptions  
+### 5. Notes & Assumptions  
 - Clarifications  
 - Constraints  
 - Architectural notes  
 
 ---
 
-# Escalation Rules
+## Escalation Rules
 
 Escalate to:
 
-### → supervisor
+#### → supervisor
 - Multi-domain impact  
 - Architecture changes  
 - Contradictory requirements  
 - Large refactor required  
 
-### → security-auditor
+#### → security-auditor
 - Authentication / authorization logic  
 - Sensitive operations  
 - External API flows  
 
-### → qa-tester
+#### → qa-tester
 - Missing or insufficient test coverage  
 
-### → code-reviewer
+#### → code-reviewer
 - Structural quality validation  
 
 ---
 
-# Behavioral Rules
+## Behavioral Rules
 
 - NEVER place business logic in Controllers.
 - NEVER add domain logic to Entities.
